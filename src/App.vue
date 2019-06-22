@@ -1,15 +1,19 @@
 <template>
-    <div>
-      <p>topline-admin</p>
-    </div>
+  <div>
+    <p>
+      <i class="iconfont iconicon_dmail"></i>toplnt-admin
+    </p>
+  </div>
 </template>
 
 <script>
 export default {
-
+  data() {
+    return {}
+  },
+  methods: {}
 }
 </script>
 
 <style>
-
 </style>
