@@ -28,6 +28,7 @@
 
 <script>
 import axios from 'axios'
+import '../../vendor/gt'
 
 export default {
   name: 'login',
@@ -36,7 +37,8 @@ export default {
       FormData: {
         mobile: '15097317238',
         code: ''
-      }
+      },
+      captchaObj: null
     }
   },
   methods: {
@@ -44,13 +46,42 @@ export default {
       console.log('submit!')
     },
     handleSendCode() {
+      // 控制显示人工验证
+      if (this.captchaObj) {
+        return this.captchaObj.verify() // 显示验证码
+      }
+
       // console.log(this.FormData)
+      // 结构辅助
       const { mobile } = this.FormData
       axios({
         method: 'GET',
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
       }).then(res => {
         console.log(res.data)
+        const data = res.data.data
+        // 请检测data的数据结构， 保证data.gt, data.challenge, data.success有值
+        // 加上window前缀因为不知道他是全局，会以为他是未定的变量
+        window.initGeetest(
+          {
+            // 以下配置参数来自服务端 SDK
+            gt: data.gt,
+            challenge: data.challenge,
+            offline: !data.success,
+            new_captcha: data.new_captcha,
+            product: 'bind'
+          },
+          (captchaObj) => {
+            this.captchaObj = captchaObj
+            // 这里可以调用验证实例 captchaObj 的实例方法
+            // console.log(captchaObj)
+            captchaObj.onReady(function() {
+              captchaObj.verify() // 显示验证码
+            }).onSuccess(function() {
+              console.log('验证成功了')
+            })
+          }
+        )
       })
     }
   }
