@@ -18,7 +18,7 @@
             </el-col>
           </el-form-item>
           <el-form-item>
-            <el-button class="btn-login" type="primary" @click="onSubmit">登陆</el-button>
+            <el-button class="btn-login" type="primary" @click="hadnleLogin">登陆</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -42,8 +42,29 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
-      console.log('submit!')
+    hadnleLogin() {
+      axios({
+        method: 'POST',
+        url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
+        data: this.FormData
+      }).then(res => { // >= 200 && 400 的状态吗都会进入里面
+        // console.log(res.data)
+        this.$message({
+          message: '恭喜你，这是一条成功消息',
+          type: 'success'
+        })
+        // 跳转页面使用路由名字
+        this.$router.push({
+          name: 'Home'
+        })
+      }).catch(err => { // >= 的状态码都会进入到这里
+        //  this.$message.error('登陆失败了，手机号或者验证码错误');
+        // console.dir(err)
+        // 和上面的等价只是这样更严谨  这样只有400的状态吗可以进来 其他的都不会进来的
+        if (err.response.status === 400) {
+          this.$message.error('登陆失败了，手机号或者验证码错误')
+        }
+      })
     },
     handleSendCode() {
       // 控制显示人工验证
