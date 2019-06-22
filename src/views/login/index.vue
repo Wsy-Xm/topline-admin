@@ -5,11 +5,14 @@
         <img src="./logo_index.png" alt>
       </div>
       <div class="login-form">
-        <el-form ref="FormData" :model="FormData">
-          <el-form-item>
+        <!-- rules  配置验证规则
+      将需要验证的组件上必须机上prop="name"
+        ref 获取表单组件，可以手动调用表单组件的验证方法-->
+        <el-form ref="FormData" :model="FormData" :rules="rules">
+          <el-form-item prop="mobile">
             <el-input v-model="FormData.mobile" placeholder="手机号"></el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item prop="code">
             <el-col :span="11">
               <el-input v-model="FormData.code" placeholder="验证码"></el-input>
             </el-col>
@@ -18,7 +21,12 @@
             </el-col>
           </el-form-item>
           <el-form-item>
-            <el-button class="btn-login" type="primary" @click="hadnleLogin">登陆</el-button>
+            <el-button
+              class="btn-login"
+              type="primary"
+              :loading="loginLoading"
+              @click="hadnleLogin"
+            >登陆</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -38,34 +46,60 @@ export default {
         mobile: '15097317238',
         code: ''
       },
-      captchaObj: null
+      rules: {
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { len: 11, message: '长度必须为11个字符', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          { len: 6, message: '长度必须为6个字符', trigger: 'blur' }
+        ]
+      },
+      captchaObj: null,
+      loginLoading: false
     }
   },
   methods: {
     hadnleLogin() {
-      axios({
-        method: 'POST',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
-        data: this.FormData
-      }).then(res => { // >= 200 && 400 的状态吗都会进入里面
-        // console.log(res.data)
-        this.$message({
-          message: '恭喜你，这是一条成功消息',
-          type: 'success'
-        })
-        // 跳转页面使用路由名字
-        this.$router.push({
-          name: 'Home'
-        })
-      }).catch(err => { // >= 的状态码都会进入到这里
-        //  this.$message.error('登陆失败了，手机号或者验证码错误');
-        // console.dir(err)
-        // 和上面的等价只是这样更严谨  这样只有400的状态吗可以进来 其他的都不会进来的
-        if (err.response.status === 400) {
-          this.$message.error('登陆失败了，手机号或者验证码错误')
+      this.loginLoading = true
+      // 调用组件的方法 FormData 是 ref里面的名字随便起的
+      this.$refs['FormData'].validate(valid => {
+        if (!valid) {
+          this.loginLoading = false
+          return
         }
+        axios({
+          method: 'POST',
+          url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
+          data: this.FormData
+        }).then(res => {
+          // >= 200 && 400 的状态吗都会进入里面
+          // console.log(res.data)
+          this.$message({
+            message: '恭喜你，这是一条成功消息',
+            type: 'success'
+          })
+
+          this.loginLoading = false
+          // 跳转页面使用路由名字
+          this.$router.push({
+            name: 'Home'
+          })
+        }).catch(err => {
+          // >= 的状态码都会进入到这里
+          //  this.$message.error('登陆失败了，手机号或者验证码错误');
+          // console.dir(err)
+          // 和上面的等价只是这样更严谨  这样只有400的状态吗可以进来 其他的都不会进来的
+
+          if (err.response.status === 400) {
+            this.$message.error('登陆失败了，手机号或者验证码错误')
+          }
+          this.loginLoading = false
+        })
       })
     },
+
     handleSendCode() {
       // 控制显示人工验证
       if (this.captchaObj) {
@@ -92,33 +126,35 @@ export default {
             new_captcha: data.new_captcha,
             product: 'bind'
           },
-          (captchaObj) => {
+          captchaObj => {
             this.captchaObj = captchaObj
             // 这里可以调用验证实例 captchaObj 的实例方法
             // console.log(captchaObj)
-            captchaObj.onReady(function() {
-              captchaObj.verify() // 显示验证码
-            }).onSuccess(function() {
-              // console.log('验证成功了')
-              console.log(captchaObj.getValidate())
-              const {
-                geetest_challenge: challenge,
-                geetest_seccode: seccode,
-                geetest_validate: validate } =
-                captchaObj.getValidate()
-                // console.log(challenge,validate,seccode)
-              axios({
-                method: 'GET',
-                url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
-                params: {
-                  challenge,
-                  seccode,
-                  validate
-                }
-              }).then(red => {
-                console.log(res.data)
+            captchaObj
+              .onReady(function() {
+                captchaObj.verify() // 显示验证码
               })
-            })
+              .onSuccess(function() {
+                // console.log('验证成功了')
+                console.log(captchaObj.getValidate())
+                const {
+                  geetest_challenge: challenge,
+                  geetest_seccode: seccode,
+                  geetest_validate: validate
+                } = captchaObj.getValidate()
+                // console.log(challenge,validate,seccode)
+                axios({
+                  method: 'GET',
+                  url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+                  params: {
+                    challenge,
+                    seccode,
+                    validate
+                  }
+                }).then(red => {
+                  console.log(res.data)
+                })
+              })
           }
         )
       })
