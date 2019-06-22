@@ -78,7 +78,25 @@ export default {
             captchaObj.onReady(function() {
               captchaObj.verify() // 显示验证码
             }).onSuccess(function() {
-              console.log('验证成功了')
+              // console.log('验证成功了')
+              console.log(captchaObj.getValidate())
+              const {
+                geetest_challenge: challenge,
+                geetest_seccode: seccode,
+                geetest_validate: validate } =
+                captchaObj.getValidate()
+                // console.log(challenge,validate,seccode)
+              axios({
+                method: 'GET',
+                url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+                params: {
+                  challenge,
+                  seccode,
+                  validate
+                }
+              }).then(red => {
+                console.log(res.data)
+              })
             })
           }
         )
