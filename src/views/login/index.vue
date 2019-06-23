@@ -20,6 +20,13 @@
               <el-button @click="handleSendCode" :disabled="disabled">{{ text }}</el-button>
             </el-col>
           </el-form-item>
+          <el-form-item prop="checked">
+            <el-checkbox v-model="FormData.checked">
+              我已阅读并同意
+              <a href="javascript:;">用户协议</a>和
+              <a href="javascript:;">隐私条款</a>
+            </el-checkbox>
+          </el-form-item>
           <el-form-item>
             <el-button
               class="btn-login"
@@ -43,9 +50,11 @@ export default {
   data() {
     return {
       FormData: {
-        mobile: '15102612348',
-        code: ''
+        mobile: '15102612348', // 手机号
+        code: '', // 验证码
+        checked: '' // 验证用户协议时候选中
       },
+      // 验证表单
       rules: {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
@@ -54,20 +63,25 @@ export default {
         code: [
           { required: true, message: '请输入验证码', trigger: 'blur' },
           { len: 6, message: '长度必须为6个字符', trigger: 'blur' }
+        ],
+        checked: [
+          { required: true, message: '请同意用户协议', trigger: 'change' }, // trigger表示选中不选中
+          // pattern正则验证 必须是true
+          { pattern: /true/, message: '请同意用户协议', trigger: 'change' }
         ]
       },
-      captchaObj: null,
+      captchaObj: null, // 控制人工交互的DOM节点
       loginLoading: false,
       text: '发送验证码',
-      count: Seconds,
-      disabled: false,
-      isok: null
+      count: Seconds, // 控制60秒
+      disabled: false // 表单禁用
     }
   },
   methods: {
+    // 登陆事件方法
     hadnleLogin() {
       this.loginLoading = true
-      // 调用组件的方法 FormData 是 ref里面的名字随便起的
+      // 调用组件的方法 FormData 是 ref里面的名字随便起的 对整个表单进行验证
       this.$refs['FormData'].validate(valid => {
         if (!valid) {
           this.loginLoading = false
@@ -97,7 +111,6 @@ export default {
             //  this.$message.error('登陆失败了，手机号或者验证码错误');
             // console.dir(err)
             // 和上面的等价只是这样更严谨  这样只有400的状态吗可以进来 其他的都不会进来的
-
             if (err.response.status === 400) {
               this.$message.error('登陆失败了，手机号或者验证码错误')
             }
@@ -105,9 +118,20 @@ export default {
           })
       })
     },
-
+    // 发送验证码
     handleSendCode() {
-      // Window.x =  document.cookie =  true;
+      // 对部分表单字段进行校验的方法
+      this.$refs['FormData'].validateField('mobile', errorMessage => {
+        // console.log(errorMessage.trim());
+        if (errorMessage.trim().length > 0) {
+          return
+        }
+        // 电泳初始化显示
+        this.showInitialize()
+      })
+    },
+    // 初始化显示
+    showInitialize() {
       // 控制显示人工验证
       if (this.captchaObj) {
         return this.captchaObj.verify() // 显示验证码
@@ -189,6 +213,7 @@ export default {
 }
 </script>
 
+// 样式
 <style lang="less">
 .login-wrap {
   height: 100%;
