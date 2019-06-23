@@ -17,7 +17,7 @@
               <el-input v-model="FormData.code" placeholder="验证码"></el-input>
             </el-col>
             <el-col :span="11" :offset="2">
-              <el-button @click="handleSendCode">获取验证码</el-button>
+              <el-button @click="handleSendCode" :disabled="disabled">{{ text }}</el-button>
             </el-col>
           </el-form-item>
           <el-form-item>
@@ -37,13 +37,13 @@
 <script>
 import axios from 'axios'
 import '../../vendor/gt'
-
+const Seconds = 60
 export default {
   name: 'login',
   data() {
     return {
       FormData: {
-        mobile: '15097317238',
+        mobile: '15102612348',
         code: ''
       },
       rules: {
@@ -57,7 +57,11 @@ export default {
         ]
       },
       captchaObj: null,
-      loginLoading: false
+      loginLoading: false,
+      text: '发送验证码',
+      count: Seconds,
+      disabled: false,
+      isok: null
     }
   },
   methods: {
@@ -73,34 +77,37 @@ export default {
           method: 'POST',
           url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
           data: this.FormData
-        }).then(res => {
-          // >= 200 && 400 的状态吗都会进入里面
-          // console.log(res.data)
-          this.$message({
-            message: '恭喜你，这是一条成功消息',
-            type: 'success'
-          })
-
-          this.loginLoading = false
-          // 跳转页面使用路由名字
-          this.$router.push({
-            name: 'Home'
-          })
-        }).catch(err => {
-          // >= 的状态码都会进入到这里
-          //  this.$message.error('登陆失败了，手机号或者验证码错误');
-          // console.dir(err)
-          // 和上面的等价只是这样更严谨  这样只有400的状态吗可以进来 其他的都不会进来的
-
-          if (err.response.status === 400) {
-            this.$message.error('登陆失败了，手机号或者验证码错误')
-          }
-          this.loginLoading = false
         })
+          .then(res => {
+            // >= 200 && 400 的状态吗都会进入里面
+            // console.log(res.data)
+            this.$message({
+              message: '恭喜你，这是一条成功消息',
+              type: 'success'
+            })
+
+            this.loginLoading = false
+            // 跳转页面使用路由名字
+            this.$router.push({
+              name: 'Home'
+            })
+          })
+          .catch(err => {
+            // >= 的状态码都会进入到这里
+            //  this.$message.error('登陆失败了，手机号或者验证码错误');
+            // console.dir(err)
+            // 和上面的等价只是这样更严谨  这样只有400的状态吗可以进来 其他的都不会进来的
+
+            if (err.response.status === 400) {
+              this.$message.error('登陆失败了，手机号或者验证码错误')
+            }
+            this.loginLoading = false
+          })
       })
     },
 
     handleSendCode() {
+      // Window.x =  document.cookie =  true;
       // 控制显示人工验证
       if (this.captchaObj) {
         return this.captchaObj.verify() // 显示验证码
@@ -134,8 +141,9 @@ export default {
               .onReady(function() {
                 captchaObj.verify() // 显示验证码
               })
-              .onSuccess(function() {
+              .onSuccess(() => {
                 // console.log('验证成功了')
+                // console.log(this.count , this.text)
                 console.log(captchaObj.getValidate())
                 const {
                   geetest_challenge: challenge,
@@ -153,11 +161,29 @@ export default {
                   }
                 }).then(red => {
                   console.log(res.data)
+                  // 验证码倒计时
+                  this.codeCountDown()
                 })
               })
           }
         )
       })
+    },
+    // 验证码倒计时
+    codeCountDown() {
+      this.disabled = true
+      this.text = `${this.count}秒后重新发送`
+      var fing = window.setInterval(() => {
+        this.text = `${--this.count}秒后重新发送`
+        //  window.x =  document.cookie = 'name:' + this.count;
+        // console.log(--this.count)
+        if (this.count === 0) {
+          window.clearInterval(fing)
+          this.text = '发送验证码'
+          this.count = Seconds
+          this.disabled = false
+        }
+      }, 1000)
     }
   }
 }
