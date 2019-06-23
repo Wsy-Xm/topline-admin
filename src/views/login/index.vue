@@ -74,7 +74,8 @@ export default {
       loginLoading: false,
       text: '发送验证码',
       count: Seconds, // 控制60秒
-      disabled: false // 表单禁用
+      disabled: false, // 表单禁用
+      initializeMobile: ''
     }
   },
   methods: {
@@ -126,23 +127,37 @@ export default {
         if (errorMessage.trim().length > 0) {
           return
         }
-        // 电泳初始化显示
-        this.showInitialize()
+        // 调用初始化显示
+        // this.showInitialize();
+        // 控制显示人工验证
+        if (this.captchaObj) {
+          // return this.captchaObj.verify(); // 显示验证码
+          // 如果手机号不相同就重新初始化 手机号相同就直接显示
+          if (this.FormData.mobile !== this.initializeMobile) {
+            // 重新初始化之前，将原来的验证码插件 DOM 删除
+            document.body.removeChild(document.querySelector('.geetest_panel'))
+
+            // 重新初始化
+            this.showInitialize()
+          } else {
+            // 显示人机交互
+            this.captchaObj.verify()
+          }
+        } else {
+          // 初始化
+          this.showInitialize()
+        }
       })
     },
     // 初始化显示
     showInitialize() {
-      // 控制显示人工验证
-      if (this.captchaObj) {
-        return this.captchaObj.verify() // 显示验证码
-      }
-
       // console.log(this.FormData)
-      // 结构辅助
-      const { mobile } = this.FormData
+
       axios({
         method: 'GET',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
+        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${
+          this.FormData.mobile
+        }`
       }).then(res => {
         console.log(res.data)
         const data = res.data.data
@@ -162,7 +177,8 @@ export default {
             // 这里可以调用验证实例 captchaObj 的实例方法
             // console.log(captchaObj)
             captchaObj
-              .onReady(function() {
+              .onReady(() => {
+                this.initializeMobile = this.FormData.mobile
                 captchaObj.verify() // 显示验证码
               })
               .onSuccess(() => {
@@ -177,7 +193,9 @@ export default {
                 // console.log(challenge,validate,seccode)
                 axios({
                   method: 'GET',
-                  url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+                  url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${
+                    this.FormData.mobile
+                  }`,
                   params: {
                     challenge,
                     seccode,
