@@ -17,7 +17,7 @@
               <el-input v-model="FormData.code" placeholder="验证码"></el-input>
             </el-col>
             <el-col :span="11" :offset="2">
-              <el-button @click="handleSendCode" :disabled="disabled">{{ text }}</el-button>
+              <el-button @click="handleSendCode" :disabled="disabled || initDis ">{{ text }}</el-button>
             </el-col>
           </el-form-item>
           <el-form-item prop="checked">
@@ -75,7 +75,8 @@ export default {
       text: '发送验证码',
       count: Seconds, // 控制60秒
       disabled: false, // 表单禁用
-      initializeMobile: ''
+      initializeMobile: '', // 接收初始化的手机号
+      initDis: false // 点击发送验证码初始化的时候禁用按钮
     }
   },
   methods: {
@@ -152,7 +153,7 @@ export default {
     // 初始化显示
     showInitialize() {
       // console.log(this.FormData)
-
+      this.initDis = true
       axios({
         method: 'GET',
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${
@@ -180,6 +181,7 @@ export default {
               .onReady(() => {
                 this.initializeMobile = this.FormData.mobile
                 captchaObj.verify() // 显示验证码
+                this.initDis = false
               })
               .onSuccess(() => {
                 // console.log('验证成功了')
