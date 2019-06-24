@@ -71,12 +71,13 @@ export default {
         ]
       },
       captchaObj: null, // 控制人工交互的DOM节点
-      loginLoading: false,
+      loginLoading: false, // 点击登陆以后登陆按钮禁用
       text: '发送验证码',
       count: Seconds, // 控制60秒
       disabled: false, // 表单禁用
       initializeMobile: '', // 接收初始化的手机号
-      initDis: false // 点击发送验证码初始化的时候禁用按钮
+      initDis: false, // 点击发送验证码初始化的时候禁用按钮
+      isOK: false
     }
   },
   methods: {
@@ -101,12 +102,17 @@ export default {
               message: '恭喜你，这是一条成功消息',
               type: 'success'
             })
+            // console.log(res.data)
 
             this.loginLoading = false
             // 跳转页面使用路由名字
             this.$router.push({
-              name: 'Home'
+              name: 'layout'
             })
+            window.localStorage.setItem(
+              'userinfo',
+              JSON.stringify(res.data.data)
+            )
           })
           .catch(err => {
             // >= 的状态码都会进入到这里
@@ -219,7 +225,6 @@ export default {
       this.text = `${this.count}秒后重新发送`
       var fing = window.setInterval(() => {
         this.text = `${--this.count}秒后重新发送`
-        //  window.x =  document.cookie = 'name:' + this.count;
         // console.log(--this.count)
         if (this.count === 0) {
           window.clearInterval(fing)
