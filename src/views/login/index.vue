@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       FormData: {
-        mobile: '15102612348', // 手机号
+        mobile: '15097317238', // 手机号
         code: '', // 验证码
         checked: '' // 验证用户协议时候选中
       },
@@ -92,7 +92,7 @@ export default {
         }
         axios({
           method: 'POST',
-          url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
+          url: `/authorizations`,
           data: this.FormData
         })
           .then(res => {
@@ -162,7 +162,7 @@ export default {
       this.initDis = true
       axios({
         method: 'GET',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${
+        url: `/captchas/${
           this.FormData.mobile
         }`
       }).then(res => {
@@ -201,7 +201,7 @@ export default {
                 // console.log(challenge,validate,seccode)
                 axios({
                   method: 'GET',
-                  url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${
+                  url: `/sms/codes/${
                     this.FormData.mobile
                   }`,
                   params: {

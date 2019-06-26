@@ -1,11 +1,14 @@
 <template>
   <el-container>
+    <!-- 侧边栏 -->
     <AppAside></AppAside>
     <el-container>
       <el-header>
+        <!-- 头部 -->
         <AppHeader></AppHeader>
       </el-header>
       <el-main>
+        <!-- 主体 -->
         <router-view></router-view>
       </el-main>
     </el-container>

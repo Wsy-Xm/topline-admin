@@ -1,10 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import home from '../views/home/index'
-import login from '../views/login/index'
-import layout from '../views/layout/index'
-import publish from '../views/publish/index'
+import nprogress from 'nprogress'
 
 Vue.use(Router)
 
@@ -18,42 +15,48 @@ const router = new Router({
     {
       name: 'layout',
       path: '/',
-      component: layout,
+      component: () => import('@/views/layout/'),
       children: [
         {
           name: 'home',
           path: '/home',
-          component: home
+          component: () => import('@/views/home/')
         },
         {
           name: 'publish',
           path: '/publish',
-          component: publish
+          component: () => import('@/views/publish/')
         }
       ]
     },
     {
       name: 'Login',
       path: '/login',
-      component: login
+      component: () => import('@/views/login/')
     }
   ]
 })
-// if () {
 
-// }
-
+// 门卫  路由拦截器
 router.beforeEach((to, from, next) => {
-  // console.log(to)
-  const userinfo = window.localStorage.getItem('userinfo')
+  nprogress.start()
+  console.log(to)
   if (to.path !== '/login') {
+    console.log(123)
+    const userinfo = window.localStorage.getItem('userinfo')
     // console.log(userinfo)
     if (!userinfo) {
       return next({ path: '/login' })
+    } else {
+      next()
     }
   } else {
     next()
   }
+})
+
+router.afterEach((to, from) => {
+  nprogress.done()
 })
 
 export default router
