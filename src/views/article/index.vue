@@ -7,23 +7,30 @@
       </div>
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="状态">
-          <el-radio-group v-model="form.resource">
-            <el-radio v-for="item in statTypes" :key="item.label" :label="item.label"></el-radio>
+          <el-radio-group v-model="filterParams.status">
+            <el-radio label>全部</el-radio>
+            <el-radio
+              v-for="(item,index) in statTypes"
+              :key="item.label"
+              :label="index + ''"
+            >{{ item.label}}</el-radio>
             <!-- <el-radio label="草稿"></el-radio>
             <el-radio label="待审核"></el-radio>
             <el-radio label="审核通过"></el-radio>
-            <el-radio label="审核失败"></el-radio> -->
+            <el-radio label="审核失败"></el-radio>-->
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="全部" ></el-option>
+          <el-select v-model="filterParams.channel_id" placeholder="请选择活动区域">
+            <el-option label="全部" value="全部"></el-option>
             <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="时间">
           <el-date-picker
-            v-model="form.value1"
+            value-format="yyyy-MM-dd"
+            @change="handleDateChage"
+            v-model="begin_end_pubdate"
             type="daterange"
             range-separator="至"
             start-placeholder="开始日期"
@@ -31,7 +38,7 @@
           ></el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+          <el-button type="primary" @click="onSubmit">查询</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -70,6 +77,7 @@
         background
         layout="prev, pager, next"
         :total="totalcountL"
+        :current-page="page"
         @current-change="heaaleCurrentChange"
         :disabled="diab"
       ></el-pagination>
@@ -98,7 +106,9 @@ export default {
         value1: ''
       },
       totalcountL: 0, // 统计多少条数据
-      diab: false,
+      diab: false, // 禁止分页按钮
+      page: 1,
+      // 状态
       statTypes: [
         {
           type: '',
@@ -121,7 +131,14 @@ export default {
           label: '已删除'
         }
       ],
-      channels: [] // 频道泪飙
+      channels: [], // 频道内容
+      filterParams: {
+        status: '', // 文章状态
+        channel_id: '', // 频道ID
+        begin_pubdate: '', // 起始时间
+        end_pubdate: '' // 截至时间
+      },
+      begin_end_pubdate: []
     }
   },
 
@@ -138,6 +155,13 @@ export default {
       this.diab = true
       // const userinfo = JSON.parse(window.localStorage.getItem("userinfo"));
       // console.log(userinfo);
+      const filterData = {}
+      for (let key in this.filterParams) {
+        if (this.filterParams[key]) {
+          filterData[key] = this.filterParams[key]
+        }
+      }
+      // console.log(filterData);
       axios({
         method: 'GET',
         url: '/articles',
@@ -147,7 +171,8 @@ export default {
         },
         params: {
           page, // 请求数据的页码，不传默认为1
-          per_page: 10 // 请求页面的数据大小，不穿默认是10
+          per_page: 10, // 请求页面的数据大小，不穿默认是10
+          ...filterData
         }
       }).then(data => {
         // console.log(data);
@@ -164,15 +189,23 @@ export default {
       }).then(data => {
         // console.log(data.channels)
         this.channels = data.channels
-        console.log(this.channels)
+        // console.log(this.channels);
       })
     },
+    // 分页处理
     heaaleCurrentChange(page) {
       // console.log(page)
       this.loadArticles(page)
     },
     onSubmit() {
-      console.log('submit!')
+      this.page = 1
+      this.loadArticles()
+    },
+    // 时间处理
+    handleDateChage(value) {
+      this.filterParams.begin_pubdate = value[0]
+      this.filterParams.end_pubdate = value[1]
+      console.log(value)
     }
   }
 }

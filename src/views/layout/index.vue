@@ -42,7 +42,7 @@ export default {
 .el-container {
   height: 100%;
   .el-aside {
-    background: #d3dce6;
+    background: #545C64;
   }
   .el-header {
     background: #b3c0d1;

@@ -50,9 +50,9 @@ export default {
   data() {
     return {
       FormData: {
-        mobile: '15097317238', // 手机号
+        mobile: '13911111111', // 手机号
         code: '246810', // 验证码
-        checked: '' // 验证用户协议时候选中
+        checked: true // 验证用户协议时候选中
       },
       // 验证表单
       rules: {
