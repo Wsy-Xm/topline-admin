@@ -44,10 +44,14 @@
         <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
       </div>
       <!-- table表格 -->
-      <el-table class="list-table" :data="tableData" style="width: 100%">
-        <el-table-column label="封面" width="180">
+      <el-table
+      class="list-table"
+      :data="tableData"
+      v-loading="diab"
+      style="width: 100%">
+        <el-table-column label="封面">
           <template slot-scope="scope">
-            <img :src="scope.row.cover.images[0]" alt>
+            <img :src="scope.row.cover.images[0]" width="100">
           </template>
         </el-table-column>
         <el-table-column prop="title" label="标题" width="180"></el-table-column>
@@ -66,6 +70,7 @@
         layout="prev, pager, next"
         :total="totalcountL"
         @current-change="heaaleCurrentChange"
+        :disabled="diab"
       ></el-pagination>
       <!-- 分页 -->
     </el-card>
@@ -91,7 +96,8 @@ export default {
         desc: '',
         value1: ''
       },
-      totalcountL: 0 // 统计多少条数据
+      totalcountL: 0, // 统计多少条数据
+      diab: false
     }
   },
 
@@ -101,6 +107,7 @@ export default {
 
   methods: {
     loadArticles(page = 1) {
+      this.diab = true
       // const userinfo = JSON.parse(window.localStorage.getItem("userinfo"));
       // console.log(userinfo);
       axios({
@@ -118,6 +125,7 @@ export default {
         // console.log(data);
         this.tableData = data.results
         this.totalcountL = data.total_count
+        this.diab = false
       })
     },
 

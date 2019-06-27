@@ -51,7 +51,7 @@ export default {
     return {
       FormData: {
         mobile: '15097317238', // 手机号
-        code: '', // 验证码
+        code: '246810', // 验证码
         checked: '' // 验证用户协议时候选中
       },
       // 验证表单

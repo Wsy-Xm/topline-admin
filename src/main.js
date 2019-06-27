@@ -14,8 +14,8 @@ import './styles/index.less'
 import '../node_modules/nprogress/nprogress.css'
 
 // 加上这个就不需要每次写UTL的时候写那么长了
-// axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/';
-axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
+axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
+// axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
 
 // Axios 请求拦截器
 axios.interceptors.request.use(config => {
