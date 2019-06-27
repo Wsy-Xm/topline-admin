@@ -6,19 +6,22 @@
         <span>全部图片</span>
       </div>
       <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="特殊资源">
+        <el-form-item label="状态">
           <el-radio-group v-model="form.resource">
-            <el-radio label="线上品牌商赞助"></el-radio>
-            <el-radio label="线下场地免费"></el-radio>
+            <el-radio v-for="item in statTypes" :key="item.label" :label="item.label"></el-radio>
+            <!-- <el-radio label="草稿"></el-radio>
+            <el-radio label="待审核"></el-radio>
+            <el-radio label="审核通过"></el-radio>
+            <el-radio label="审核失败"></el-radio> -->
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="活动区域">
+        <el-form-item label="频道">
           <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+            <el-option label="全部" ></el-option>
+            <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="活动时间">
+        <el-form-item label="时间">
           <el-date-picker
             v-model="form.value1"
             type="daterange"
@@ -117,15 +120,20 @@ export default {
           type: 'danger',
           label: '已删除'
         }
-      ]
+      ],
+      channels: [] // 频道泪飙
     }
   },
 
   created: function() {
+    // 分页
     this.loadArticles()
+    // 文章频道
+    this.loadchannels()
   },
 
   methods: {
+    // 分页处理
     loadArticles(page = 1) {
       this.diab = true
       // const userinfo = JSON.parse(window.localStorage.getItem("userinfo"));
@@ -148,7 +156,17 @@ export default {
         this.diab = false
       })
     },
-
+    // 获取文章频道
+    loadchannels() {
+      axios({
+        method: 'GET',
+        url: '/channels'
+      }).then(data => {
+        // console.log(data.channels)
+        this.channels = data.channels
+        console.log(this.channels)
+      })
+    },
     heaaleCurrentChange(page) {
       // console.log(page)
       this.loadArticles(page)
