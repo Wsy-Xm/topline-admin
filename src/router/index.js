@@ -45,9 +45,9 @@ const router = new Router({
 // 门卫  路由拦截器
 router.beforeEach((to, from, next) => {
   nprogress.start()
-  console.log(to)
+  // console.log(to)
   if (to.path !== '/login') {
-    console.log(123)
+    // console.log(123)
     const userinfo = window.localStorage.getItem('userinfo')
     // console.log(userinfo)
     if (!userinfo) {

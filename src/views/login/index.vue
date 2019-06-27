@@ -95,7 +95,8 @@ export default {
           url: `/authorizations`,
           data: this.FormData
         })
-          .then(res => {
+          .then(data => {
+            // console.log(res)
             // >= 200 && 400 的状态吗都会进入里面
             // console.log(res.data)
             this.$message({
@@ -109,15 +110,13 @@ export default {
             this.$router.push({
               name: 'layout'
             })
-            window.localStorage.setItem(
-              'userinfo',
-              JSON.stringify(res.data.data)
-            )
+            window.localStorage.setItem('userinfo', JSON.stringify(data))
           })
           .catch(err => {
+            console.dir(err)
             // >= 的状态码都会进入到这里
-            //  this.$message.error('登陆失败了，手机号或者验证码错误');
-            // console.dir(err)
+            this.$message.error('登陆失败了，手机号或者验证码错误')
+            console.dir(err)
             // 和上面的等价只是这样更严谨  这样只有400的状态吗可以进来 其他的都不会进来的
             if (err.response.status === 400) {
               this.$message.error('登陆失败了，手机号或者验证码错误')
@@ -162,12 +161,10 @@ export default {
       this.initDis = true
       axios({
         method: 'GET',
-        url: `/captchas/${
-          this.FormData.mobile
-        }`
-      }).then(res => {
-        console.log(res.data)
-        const data = res.data.data
+        url: `/captchas/${this.FormData.mobile}`
+      }).then(data => {
+        // console.log(res.data);
+        // const data = data;
         // 请检测data的数据结构， 保证data.gt, data.challenge, data.success有值
         // 加上window前缀因为不知道他是全局，会以为他是未定的变量
         window.initGeetest(
@@ -201,16 +198,14 @@ export default {
                 // console.log(challenge,validate,seccode)
                 axios({
                   method: 'GET',
-                  url: `/sms/codes/${
-                    this.FormData.mobile
-                  }`,
+                  url: `/sms/codes/${this.FormData.mobile}`,
                   params: {
                     challenge,
                     seccode,
                     validate
                   }
                 }).then(red => {
-                  console.log(res.data)
+                  // console.log(res.data)
                   // 验证码倒计时
                   this.codeCountDown()
                 })

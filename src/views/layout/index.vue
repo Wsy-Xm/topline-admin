@@ -48,7 +48,8 @@ export default {
     background: #b3c0d1;
   }
   .el-main {
-    background: #e9eef3;
+    background: #fff;
+    padding: 0;
   }
 }
 .app-header {
