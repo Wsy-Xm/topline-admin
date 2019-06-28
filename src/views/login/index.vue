@@ -103,20 +103,19 @@ export default {
               message: '恭喜你，这是一条成功消息',
               type: 'success'
             })
+            window.localStorage.setItem('userinfo', JSON.stringify(data))
             // console.log(res.data)
-
             this.loginLoading = false
             // 跳转页面使用路由名字
             this.$router.push({
-              name: 'layout'
+              path: '/home'
             })
-            window.localStorage.setItem('userinfo', JSON.stringify(data))
           })
           .catch(err => {
             console.dir(err)
             // >= 的状态码都会进入到这里
-            this.$message.error('登陆失败了，手机号或者验证码错误')
-            console.dir(err)
+            // this.$message.error('登陆失败了，手机号或者验证码错误')
+            // console.dir(err)
             // 和上面的等价只是这样更严谨  这样只有400的状态吗可以进来 其他的都不会进来的
             if (err.response.status === 400) {
               this.$message.error('登陆失败了，手机号或者验证码错误')

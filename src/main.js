@@ -58,8 +58,8 @@ axios.interceptors.response.use(response => { // >= 200 && < 400 会进入这里
 }, error => { // >= 400 会进入这里
   // console.dir(error)
   const status = error.response.status
-  window.localStorage.removeItem('userinfo')
   if (status === 401) {
+    window.localStorage.removeItem('userinfo')
     router.push({
       name: 'login'
     })

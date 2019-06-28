@@ -21,10 +21,11 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道">
-          <el-select v-model="filterParams.channel_id" placeholder="请选择活动区域">
+          <article-channel v-model="filterParams.channel_id"></article-channel>
+          <!-- <el-select v-model="filterParams.channel_id" placeholder="请选择活动区域">
             <el-option label="全部" value="全部"></el-option>
             <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
-          </el-select>
+          </el-select>-->
         </el-form-item>
         <el-form-item label="时间">
           <el-date-picker
@@ -65,9 +66,12 @@
             <el-tag :type="statTypes[scope.row.status].type">{{ statTypes[scope.row.status].label }}</el-tag>
           </template>
         </el-table-column>
+
         <el-table-column label="操作">
-          <el-button type="info" round>编辑</el-button>
-          <el-button type="warning" round>删除</el-button>
+          <template slot-scope="scope">
+            <el-button type="info" round @click="headleRedact(scope.row.id)">编辑</el-button>
+            <el-button type="warning" round @click="headleDelete(scope.row.id)">删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
 
@@ -89,8 +93,11 @@
 
 <script>
 import axios from 'axios'
-
+import ArticleChannel from '../../components/article-channel/index'
 export default {
+  components: {
+    ArticleChannel
+  },
   name: 'AppArticle',
   data() {
     return {
@@ -153,7 +160,7 @@ export default {
   methods: {
     // 分页处理
     loadArticles(page = 1) {
-    // console.log(page)
+      // console.log(page)
       this.diab = true
       // const userinfo = JSON.parse(window.localStorage.getItem("userinfo"));
       // console.log(userinfo);
@@ -177,7 +184,7 @@ export default {
           ...filterData
         }
       }).then(data => {
-        // console.log(data);
+        console.log(data)
         this.tableData = data.results
         this.totalcountL = data.total_count
         this.diab = false
@@ -210,6 +217,39 @@ export default {
       this.filterParams.begin_pubdate = value[0]
       this.filterParams.end_pubdate = value[1]
       console.log(value)
+    },
+    // 编辑
+    headleRedact(id) {
+      // console.log(id);
+      this.$router.push(`/publish/${id}`)
+    },
+    // 删除
+    headleDelete(id) {
+      this.$confirm('此操作将永久删除该文章, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      })
+        .then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          axios({
+            method: 'DELETE',
+            url: `/articles/${id}`
+          }).then(data => {
+            // console.log(data)
+            this.loadArticles()
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     }
   }
 }

@@ -62,8 +62,9 @@ export default {
         method: 'GET',
         url: '/user/profile'
       }).then(data => {
-        //   console.log(data)
+        // console.log(data)
         this.formData = data
+        this.imageUrl = data.photo
         // console.log(this.formData)
       })
     },
