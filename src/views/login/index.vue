@@ -46,7 +46,7 @@ import axios from 'axios'
 import '../../vendor/gt'
 const Seconds = 60
 export default {
-  name: 'login',
+  name: 'APPLogin',
   data() {
     return {
       FormData: {

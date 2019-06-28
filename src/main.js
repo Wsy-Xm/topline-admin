@@ -10,12 +10,25 @@ import router from './router'
 // 引入style全局样式
 import './styles/index.less'
 
+// 处理数字丢失精度
+import JSONbig from 'json-bigint'
+
 // 进度条样式
 import '../node_modules/nprogress/nprogress.css'
 
 // 加上这个就不需要每次写UTL的时候写那么长了
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
 // axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
+
+axios.defaults.transformResponse = [function(data) {
+  try {
+    // data 数据可能不是标准的 JSON 格式字符串，否则会导致 JSONbig.parse(data) 转换失败报错
+    return JSONbig.parse(data)
+  } catch (err) {
+    // 无法转换的数据直接原样返回
+    return data
+  }
+}]
 
 // Axios 请求拦截器
 axios.interceptors.request.use(config => {
@@ -38,7 +51,9 @@ axios.interceptors.request.use(config => {
 // 统一处理响应的数据格式
 axios.interceptors.response.use(response => { // >= 200 && < 400 会进入这里
   // 这里是定制返回数据
+
   // return 123  这样res.data 都会得到123
+  // 由于后端的数据id超出了js 的安全正式范围，所以使用jsonbig 统一处理
   return response.data.data
 }, error => { // >= 400 会进入这里
   // console.dir(error)

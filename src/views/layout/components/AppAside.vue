@@ -22,8 +22,8 @@
         <el-menu-item-group>
           <el-menu-item index="/publish">发布文章</el-menu-item>
           <el-menu-item index="/article">内容管理</el-menu-item>
-          <el-menu-item index="2-3">评论列表</el-menu-item>
-          <el-menu-item index="2-4">素材管理</el-menu-item>
+          <el-menu-item index="/comment">评论列表</el-menu-item>
+          <el-menu-item index="/image">素材管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       <el-submenu index="3">
@@ -33,12 +33,12 @@
         </template>
         <el-menu-item-group>
           <el-menu-item index="3-1">图文数据</el-menu-item>
-          <el-menu-item index="3-2">粉丝概况</el-menu-item>
-          <el-menu-item index="3-3">粉丝画像</el-menu-item>
-          <el-menu-item index="3-4">粉丝列表</el-menu-item>
+          <el-menu-item index="/fans/overview">粉丝概况</el-menu-item>
+          <el-menu-item index="/fans/portrayal">粉丝画像</el-menu-item>
+          <el-menu-item index="/fans/list">粉丝列表</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item index="4">
+      <el-menu-item index="/account">
         <i class="iconfont iconqunfengzhanghushezhi"></i>
         <span slot="title">账户设置</span>
       </el-menu-item>
@@ -48,6 +48,7 @@
 
 <script>
 export default {
+  name: 'APPSside',
   data() {
     return {
       handleOpen(key, keyPath) {

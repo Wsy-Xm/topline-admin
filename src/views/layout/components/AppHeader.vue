@@ -12,7 +12,7 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>个人信息</el-dropdown-item>
           <el-dropdown-item>git地址</el-dropdown-item>
-          <el-dropdown-item >退出</el-dropdown-item>
+          <el-dropdown-item @click.native="headleExit">退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-col>
@@ -21,6 +21,7 @@
 
 <script>
 export default {
+  name: 'APPHeader',
   data() {
     return {
       userinfo: {}
@@ -31,6 +32,15 @@ export default {
     // console.log(JSON.parse(window.localStorage.getItem('name')))
     this.userinfo = JSON.parse(window.localStorage.getItem('userinfo'))
     // console.log(this.userinfo)
+  },
+  methods: {
+    // 退出登陆
+    headleExit() {
+      window.localStorage.removeItem('userinfo')
+      this.$router.push({
+        name: 'login'
+      })
+    }
   }
 }
 </script>

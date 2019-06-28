@@ -91,6 +91,7 @@
 import axios from 'axios'
 
 export default {
+  name: 'AppArticle',
   data() {
     return {
       tableData: [],
@@ -152,6 +153,7 @@ export default {
   methods: {
     // 分页处理
     loadArticles(page = 1) {
+    // console.log(page)
       this.diab = true
       // const userinfo = JSON.parse(window.localStorage.getItem("userinfo"));
       // console.log(userinfo);
@@ -195,9 +197,11 @@ export default {
     // 分页处理
     heaaleCurrentChange(page) {
       // console.log(page)
+      this.page = page
       this.loadArticles(page)
     },
     onSubmit() {
+      // console.log(11111)
       this.page = 1
       this.loadArticles()
     },
@@ -233,8 +237,5 @@ export default {
 }
 .el-card.is-always-shadow {
   box-shadow: none;
-}
-.el-pagination {
-  padding-left: 30%;
 }
 </style>
