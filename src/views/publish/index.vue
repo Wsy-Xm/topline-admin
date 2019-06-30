@@ -2,14 +2,16 @@
   <div>
     <el-card class="publish-card" v-loading="loading">
       <div slot="header" class="header">
-        <span>发布文章</span>
+        <span>{{ $route.name === 'publish-amend' ? '修改文章':'发布文章' }}</span>
       </div>
       <el-form>
         <el-form-item label="标题">
           <el-input type="text" v-model="formData.title"></el-input>
         </el-form-item>
-        <el-form-item label="内容">
-          <el-input type="textarea" v-model="formData.content"></el-input>
+        <el-form-item>
+          <!-- <el-input type="textarea" v-model="formData.content"></el-input> -->
+          <!-- bidirectional data binding（双向数据绑定） -->
+          <quill-editor v-model="formData.content" ref="myQuillEditor" :options="editorOption"></quill-editor>
         </el-form-item>
         <el-form-item label="封面"></el-form-item>
         <el-form-item label="频道">
@@ -25,7 +27,11 @@
           </el-select>-->
         </el-form-item>
         <div>
-          <el-button type="success" @click="headleLssue(false)" :loading="buttonLoading">发布</el-button>
+          <el-button
+            type="success"
+            @click="headleLssue(false)"
+            :loading="buttonLoading"
+          >{{ $route.name === 'publish-amend' ? '修改':'发布' }}</el-button>
           <el-button type="primary" @click="headleLssue(true)" :loading="buttonLoading">存入草稿</el-button>
         </div>
       </el-form>
@@ -38,10 +44,18 @@ import axios from 'axios'
 // import ArticleChannel from '@components/article-channel/'
 import ArticleChannel from '../../components/article-channel/index'
 
+// 富文本样式
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+// 富文本引入
+import { quillEditor } from 'vue-quill-editor'
+
 export default {
   name: 'AppPublish',
   components: {
-    ArticleChannel
+    ArticleChannel,
+    quillEditor
   },
   data() {
     return {
@@ -55,15 +69,36 @@ export default {
         channel_id: ''.toString() // 文章所属频道id
       },
       buttonLoading: false,
-      loading: false
+      loading: false,
+      editorOption: {} // 富文本相关
     }
   },
-  mounted() {
-    console.log(this.$route.name === 'publish-amend')
+
+  // 计算属性
+  // computed: {
+  //   isEdit:function () {
+  //     return this.$route.name === "publish-amend";
+  //   }
+  // },
+
+  created() {
+    // 判断是编辑还是发布
+    // console.log(this.$route.name === "publish-amend");
+    // console.log(this.$route)
     if (this.$route.name === 'publish-amend') {
       this.loadingData()
     }
   },
+  // 富文本编辑器
+  computed: {
+    editor() {
+      return this.$refs.myQuillEditor.quill
+    }
+  },
+  // 富文本编辑器
+  // mounted() {
+  //   console.log("this is current quill instance object", this.editor);
+  // },
   methods: {
     headleLssue(draft) {
       // console.log(draft);
@@ -95,6 +130,7 @@ export default {
     //   console.log(index)
     //   this.formData.channel_id = index;
     // }
+    // 点击编辑加载响应的数据
     loadingData() {
       // console.log(this.$route.params.id)
       this.loading = true
@@ -105,7 +141,6 @@ export default {
         // console.log(data)
         this.formData = data
         this.loading = false
-        this.loading = true
       })
     }
   }
@@ -113,4 +148,7 @@ export default {
 </script>
 
 <style lang="less">
+.ql-editor {
+  height: 300px;
+}
 </style>

@@ -81,7 +81,7 @@ export default {
         }
       })
         .then(data => {
-          console.log(data)
+          // console.log(data)
           this.$message({
             message: '信息修改成功',
             type: 'success'
@@ -118,10 +118,14 @@ export default {
         method: 'PATCH',
         url: '/user/photo',
         data: formData
-      }).then(data => {
-        // console.log(data);
-        this.imageUrl = data.photo
       })
+        .then(data => {
+          // console.log(data);
+          this.imageUrl = data.photo
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
   }
 }

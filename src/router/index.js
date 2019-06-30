@@ -34,20 +34,29 @@ const router = new Router({
           path: '/publish/:id',
           component: () => import('@/views/publish/')
         },
+        // 内容管理
         {
           name: 'article',
           path: '/article',
           component: () => import('@/views/article/')
         },
+        // 评论管理
         {
           name: 'comment',
           path: '/comment',
           component: () => import('@/views/comment/')
         },
+        // 账户设置
         {
           name: 'account',
           path: '/account',
           component: () => import('@/views/account/')
+        },
+        // 素材管理
+        {
+          name: 'image',
+          path: '/image',
+          component: () => import('@/views/image/')
         }
       ]
     },

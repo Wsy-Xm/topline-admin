@@ -7,7 +7,6 @@
       :key="item.id"
       :label="item.name"
       :value="item.id"
-
       ></el-option>
     </el-select>
   </div>

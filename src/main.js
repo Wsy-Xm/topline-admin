@@ -13,6 +13,8 @@ import './styles/index.less'
 // 处理数字丢失精度
 import JSONbig from 'json-bigint'
 
+// import srote from "./store"
+
 // 进度条样式
 import '../node_modules/nprogress/nprogress.css'
 
@@ -72,5 +74,6 @@ Vue.use(ElementUI)
 Vue.config.productionTip = false
 new Vue({
   router,
+  // srote,
   render: h => h(App)
 }).$mount('#app')

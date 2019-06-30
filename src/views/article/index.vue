@@ -94,6 +94,7 @@
 <script>
 import axios from 'axios'
 import ArticleChannel from '../../components/article-channel/index'
+
 export default {
   components: {
     ArticleChannel
@@ -116,6 +117,7 @@ export default {
       totalcountL: 0, // 统计多少条数据
       diab: false, // 禁止分页按钮
       page: 1,
+      // totalcountL:0,
       // 状态
       statTypes: [
         {
@@ -184,7 +186,7 @@ export default {
           ...filterData
         }
       }).then(data => {
-        console.log(data)
+        // console.log(data)
         this.tableData = data.results
         this.totalcountL = data.total_count
         this.diab = false

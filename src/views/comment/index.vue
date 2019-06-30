@@ -78,7 +78,7 @@ export default {
         }
       })
         .then(data => {
-          console.log(data)
+          // console.log(data)
           //   this.$message(data.allow_comment ? '启用评论状态成功':'关闭评论状态成功');
           this.onOff = false
           this.$message({
